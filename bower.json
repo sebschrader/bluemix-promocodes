@@ -1,0 +1,24 @@
+{
+  "name": "bluemix-promocodes",
+  "version": "0.0.0",
+  "authors": [
+    "Sebastian Schrader <sebastian.schrader@tu-dresden.de>"
+  ],
+  "description": "Request Promocodes for IBM bluemix",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "bluemix_promocodes/static/dependencies",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5"
+  }
+}

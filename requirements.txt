@@ -1,0 +1,7 @@
+Flask
+Flask-Admin
+Flask-BasicAuth
+Flask-WTF
+Jinja2
+sendgrid
+SQLAlchemy

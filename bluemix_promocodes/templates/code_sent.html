@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <p class="lead">
+        A promo code and instructions have been sent to {{ email }}.
+    </p><p class="lead">
+        No email received?
+    </p><p>
+        <a class="btn btn-default btn-lg" href="{{ url_for('resend_code', email=email) }}">Resend</a>
+    </p>
+{% endblock %}

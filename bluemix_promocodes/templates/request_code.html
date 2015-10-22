@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% import 'forms.html' as forms %}
+
+{% block content %}
+    <p class="lead">Request a Promo Code for 6-months of free Bluemix usage</p>
+    <form method="post" action="{{ url_for('request_code') }}">
+        {% for field in form %}
+            {{ forms.render_field(field) }}
+        {% endfor %}
+        <button class="btn btn-lg btn-primary" type="submit">Request Code</button>
+    </form>
+{% endblock %}
