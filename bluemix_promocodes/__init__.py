@@ -204,4 +204,5 @@ def resend_code(email):
 
 
 if __name__ == '__main__':
-    app.run()
+    port = int(os.getenv('VCAP_APP_PORT', 8000))
+    app.run(port=port)
