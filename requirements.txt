@@ -4,4 +4,5 @@ Flask-BasicAuth
 Flask-WTF
 Jinja2
 sendgrid
+gunicorn
 SQLAlchemy
