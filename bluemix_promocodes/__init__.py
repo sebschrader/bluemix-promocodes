@@ -1,11 +1,13 @@
 import contextlib
 import json
+import logging
 import os
 
 from flask import Flask, request, render_template
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
 import sendgrid
+import sys
 from wtforms import StringField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, EqualTo
@@ -30,6 +32,9 @@ def import_cloudfoundry_config(config):
 
 
 app = Flask(__name__)
+handler = logging.StreamHandler(stream=sys.stderr)
+handler.setLevel(logging.WARNING)
+app.logger.addHandler(handler)
 app.config.from_object(defaults)
 try:
     from bluemix_promocodes import config
