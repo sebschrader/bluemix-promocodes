@@ -1,4 +1,5 @@
 import contextlib
+import json
 import os
 
 from flask import Flask, request, render_template
@@ -12,6 +13,16 @@ from wtforms.validators import DataRequired, EqualTo
 from bluemix_promocodes import defaults
 
 
+def import_cloudfoundry_config(config):
+    if 'VCAP_SERVICES' in os.environ:
+        try:
+            services = json.loads(os.getenv('VCAP_SERVICES'))
+            sqldb_services = services['sqldb']
+            for service in sqldb_services:
+                if service['name'] == config['SQLDB_SERVICE']:
+                    config['SQLALCHEMY_DATABASE_URI'] = "db2+ibm_db://{username}:{password}@{host}:{port}/{db}".format(service['credentials'])
+        except (ValueError, KeyError):
+            pass
 
 
 app = Flask(__name__)
@@ -24,6 +35,7 @@ else:
     app.config.from_object(config)
 
 
+import_cloudfoundry_config(app.config)
 db = SQLAlchemy(app)
 
 

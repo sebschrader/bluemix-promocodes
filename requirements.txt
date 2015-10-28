@@ -6,5 +6,7 @@ Flask-WTF
 Jinja2
 SQLAlchemy
 WTForms
+ibm-db
+ibm-db-sa
 gunicorn
 sendgrid
