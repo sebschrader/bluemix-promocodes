@@ -22,7 +22,7 @@ def import_cloudfoundry_config(config):
             for service in services['sqldb']:
                 if service['name'] == config['SQLDB_SERVICE']:
                     uri = "db2+ibm_db://{username}:{password}@{host}:{port}/{db}"
-                    config['SQLALCHEMY_DATABASE_URI'] = uri.format(service['credentials'])
+                    config['SQLALCHEMY_DATABASE_URI'] = uri.format(**service['credentials'])
             for service in services['sendgrid']:
                 if service['name'] == config['SENDGRID_SERVICE']:
                     config['SENDGRID_USERNAME'] = service['credentials']['username']
