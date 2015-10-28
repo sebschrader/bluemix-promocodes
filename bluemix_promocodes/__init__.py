@@ -1,10 +1,10 @@
 import contextlib
-import sendgrid
 import sqlite3
 import os
 
 from flask import Flask, request, render_template
 from flask.ext.wtf import Form
+import sendgrid
 from wtforms import StringField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, EqualTo
