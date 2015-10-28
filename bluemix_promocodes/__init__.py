@@ -158,7 +158,7 @@ def resend_code(email):
         if not user.code:
             return render_template('errors/generic.html', message="Internal error (No code for request available).")
         send_code_mail(user.email, user.first_name, user.last_name, user.code.value)
-        return render_template('code_sent.html', email=email)
+        return render_template('code_resent.html', email=email)
 
 
 if __name__ == '__main__':
