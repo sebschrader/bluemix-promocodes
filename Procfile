@@ -1,1 +1,1 @@
-web: gunicorn -b 127.0.0.1:80 bluemix_promocodes:app
+web: gunicorn -b 0.0.0.0:$PORT bluemix_promocodes:app
