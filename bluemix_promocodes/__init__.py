@@ -151,11 +151,12 @@ def send_code_mail(email, first_name, last_name, code):
     msg.set_from_name("IBM Bluemix Promo Codes")
     msg.set_subject("Your IBM Bluemix Promo Code")
     msg.set_text(render_template("mail_body.txt",
-                                 email=email, first_name=first_name, last_name=last_name, code=code))
+                                 email=email, first_name=first_name,
+                                 last_name=last_name, code=code))
     msg.smtpapi.add_filter('clicktrack', 'enable', 0)
     msg.smtpapi.add_filter('ganalytics', 'enable', 0)
     msg.smtpapi.add_filter('opentrack', 'enable', 0)
-    msg.smtpapi.add_filter('gravatar', 'enable', 0  )
+    msg.smtpapi.add_filter('gravatar', 'enable', 0)
     sg = get_sendgrid_client()
     status, message = sg.send(msg)
 
