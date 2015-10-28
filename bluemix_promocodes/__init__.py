@@ -17,10 +17,10 @@ def import_cloudfoundry_config(config):
     if 'VCAP_SERVICES' in os.environ:
         try:
             services = json.loads(os.getenv('VCAP_SERVICES'))
-            sqldb_services = services['sqldb']
-            for service in sqldb_services:
+            for service in services['sqldb']:
                 if service['name'] == config['SQLDB_SERVICE']:
-                    config['SQLALCHEMY_DATABASE_URI'] = "db2+ibm_db://{username}:{password}@{host}:{port}/{db}".format(service['credentials'])
+                    uri = "db2+ibm_db://{username}:{password}@{host}:{port}/{db}"
+                    config['SQLALCHEMY_DATABASE_URI'] = uri.format(service['credentials'])
         except (ValueError, KeyError):
             pass
 
