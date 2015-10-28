@@ -3,6 +3,6 @@ applications:
   memory: 128M
   instances: 1
   domain: mybluemix.net
-  name: promocodes-demo
-  host: promocodes-demo
+  name: codes
+  host: codes
   disk_quota: 1024M
