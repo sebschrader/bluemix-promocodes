@@ -21,6 +21,10 @@ def import_cloudfoundry_config(config):
                 if service['name'] == config['SQLDB_SERVICE']:
                     uri = "db2+ibm_db://{username}:{password}@{host}:{port}/{db}"
                     config['SQLALCHEMY_DATABASE_URI'] = uri.format(service['credentials'])
+            for service in services['sendgrid']:
+                if service['name'] == config['SENDGRID_SERVICE']:
+                    config['SENDGRID_USERNAME'] = service['credentials']['username']
+                    config['SENDGRID_PASSWORD'] = service['credentials']['password']
         except (ValueError, KeyError):
             pass
 
@@ -56,7 +60,7 @@ class Code(db.Model):
 
 
 def get_sendgrid_client():
-    client = sendgrid.SendGridClient(app.config['SENDGRID_API_KEY'],
+    client = sendgrid.SendGridClient(app.config['SENDGRID_USERNAME'], app.config['SENDGRID_PASSWORD'],
                                      raise_errors=True)
     return client
 
