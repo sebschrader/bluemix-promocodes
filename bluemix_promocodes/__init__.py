@@ -1,8 +1,8 @@
 import contextlib
-import sqlite3
 import os
 
 from flask import Flask, request, render_template
+from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import Form
 import sendgrid
 from wtforms import StringField
@@ -12,12 +12,35 @@ from wtforms.validators import DataRequired, EqualTo
 from bluemix_promocodes import defaults
 
 
-def get_db_connection():
-    conn = getattr(request, 'db_connection', None)
-    if conn is None:
-        conn = sqlite3.connect(app.config['DATABASE_PATH'])
-        request.db_connection = conn
-    return conn
+
+
+app = Flask(__name__)
+app.config.from_object(defaults)
+try:
+    from bluemix_promocodes import config
+except ImportError:
+    config = None
+else:
+    app.config.from_object(config)
+
+
+db = SQLAlchemy(app)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer(), primary_key=True, nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    first_name = db.Column(db.String(255), nullable=False)
+    last_name = db.Column(db.String(255), nullable=False)
+    ip = db.Column(db.String(39), nullable=False)
+    created_at = db.Column(db.DateTime(), nullable=False, default=db.func.now())
+
+
+class Code(db.Model):
+    id = db.Column(db.Integer(), primary_key=True, nullable=False)
+    value = db.Column(db.String(64), unique=True, nullable=False)
+    user_id = db.Column(db.Integer(), db.ForeignKey(User.id), unique=True, nullable=True)
+    user = db.relationship(User, backref=db.backref('code', uselist=False))
 
 
 def get_sendgrid_client():
@@ -28,120 +51,42 @@ def get_sendgrid_client():
 
 @contextlib.contextmanager
 def transaction():
-    conn = get_db_connection()
     try:
         yield
-        conn.commit()
+        db.session.commit()
     except:
-        conn.rollback()
+        db.session.rollback()
         raise
 
-
-def create_tables():
-    conn = sqlite3.connect(app.config['DATABASE_PATH'])
-    conn.execute('CREATE TABLE IF NOT EXISTS "code" ('
-                 'id INTEGER PRIMARY KEY NOT NULL, '
-                 'value CHARACTER(64) UNIQUE NOT NULL, '
-                 'user_id INTEGER UNIQUE)')
-    conn.execute('CREATE TABLE IF NOT EXISTS "user" ('
-                 'id INTEGER PRIMARY KEY NOT NULL, '
-                 'email VARCHAR(255) UNIQUE NOT NULL, '
-                 'first_name VARCHAR(255) NOT NULL, '
-                 'last_name VARCHAR(255) NOT NULL, '
-                 'ip CHAR(39) NOT NULL, '
-                 'created_at INTEGER NOT NULL DEFAULT (datetime(\'now\')))')
-
-
-def get_single_row(query, params):
-    """
-    Execute a given query and expect a single row as result.
-
-    :raises AssertionError: if more than one result is returned
-    :rtype: sqlite3.Row
-    """
-    conn = get_db_connection()
-    cursor = conn.execute(query, params)
-    row = cursor.fetchone()
-    assert len(cursor.fetchall()) == 0
-    return row
-
-
 def get_user_by_id(user_id):
-    row = get_single_row('SELECT id, email, first_name, last_name, ip, created_at '
-                         'FROM "user" WHERE id = ?', (user_id,))
-    if row:
-        assert len(row) == 6
-    return row
+    return db.session.query(User).filter_by(id=user_id).first()
 
 
 def get_user_by_email(email):
-    row = get_single_row('SELECT id, email, first_name, last_name, ip, created_at '
-                         'FROM "user" WHERE email = ?', (email,))
-    if row:
-        assert len(row) == 6
-    return row
+    return db.session.query(User).filter_by(email=email).first()
 
 
 def get_code_by_id(code_id):
-    row = get_single_row('SELECT id, value, user_id '
-                         'FROM "code" WHERE id = ?', (code_id,))
-    if row:
-        assert len(row) == 3
-    return row
+    return db.session.query(Code).filter_by(id=code_id).first()
 
 
 def get_code_by_user_id(user_id):
-    row = get_single_row('SELECT id, value, user_id '
-                         'FROM "code" WHERE user_id = ?', (user_id,))
-    if row:
-        assert len(row) == 3
-    return row
+    return db.session.query(Code).filter_by(user_id=user_id).first()
 
 
 def get_unused_code():
-    row = get_single_row('SELECT id, value, user_id '
-                         'FROM "code" WHERE user_id IS NULL LIMIT 1', ())
-    if row:
-        assert len(row) == 3
-    return row
+    return db.session.query(Code).filter_by(user=None).limit(1).first()
 
 
-def allocate_code(user_id, code_id):
-    conn = get_db_connection()
-    cursor = conn.execute('UPDATE "code" SET user_id = ? WHERE id = ?', (user_id, code_id))
-    assert cursor.rowcount == 1
+def allocate_code(user, code):
+    code.user = user
+    db.session.add(code)
 
 
 def create_user(email, first_name, last_name, ip):
-    conn = get_db_connection()
-    params = (email, first_name, last_name, ip)
-    cursor = conn.execute('INSERT INTO "user" (email, first_name, last_name, ip) '
-                          'VALUES (?, ?, ?, ?)', params)
-    return cursor.lastrowid
-
-
-app = Flask(__name__)
-
-
-app.config.from_object(defaults)
-try:
-    from bluemix_promocodes import config
-except ImportError:
-    config = None
-else:
-    app.config.from_object(config)
-create_tables()
-CONFIG_ENVVAR = 'BLUEMIX_PROMOCODES_CONFIG'
-if CONFIG_ENVVAR in os.environ:
-    app.config.from_envvar(CONFIG_ENVVAR)
-
-
-@app.teardown_request
-def close_database(error=None):
-    conn = getattr(request, 'db_connection', None)
-    if conn is not None:
-        del request.db_connection
-        conn.close()
+    user = User(email=email, first_name=first_name, last_name=last_name, ip=ip)
+    db.session.add(user)
+    return user
 
 
 def send_code_mail(email, first_name, last_name, code):
@@ -179,12 +124,11 @@ def request_code():
             code = get_unused_code()
             if not code:
                 return render_template('errors/generic.html', message="No more codes left.")
-            code_id, code_value, code_user_id = code
             first_name = form.first_name.data
             last_name = form.last_name.data
-            user_id = create_user(email, first_name, last_name, request.remote_addr)
-            allocate_code(user_id, code_id)
-            send_code_mail(email, first_name, last_name, code_value)
+            user = create_user(email, first_name, last_name, request.remote_addr)
+            allocate_code(user, code)
+            send_code_mail(email, first_name, last_name, code.value)
         return render_template('code_sent.html', email=email)
     return render_template('request_code.html', form=form)
 
@@ -195,12 +139,9 @@ def resend_code(email):
         user = get_user_by_email(email)
         if not user:
             return render_template("errors/users_not_exists.html", email=email)
-        user_id, email, first_name, last_name, ip, created_at = user
-        code = get_code_by_user_id(user_id)
-        if not code:
+        if not user.code:
             return render_template('errors/generic.html', message="Internal error (No code for request available).")
-        code_id, code_value, code_user_id = code
-        send_code_mail(email, first_name, last_name, code_value)
+        send_code_mail(user.email, user.first_name, user.last_name, user.code.value)
         return render_template('code_sent.html', email=email)
 
 

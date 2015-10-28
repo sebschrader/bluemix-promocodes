@@ -1,6 +1,7 @@
 Flask
 Flask-Admin
 Flask-BasicAuth
+Flask-SQLAlchemy
 Flask-WTF
 Jinja2
 SQLAlchemy
