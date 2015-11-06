@@ -26,3 +26,5 @@ var/
 .installed.cfg
 *.egg
 
+manifest.yml
+
