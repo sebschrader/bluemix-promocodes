@@ -1,6 +1,7 @@
 Flask
 Flask-BasicAuth
 Flask-SQLAlchemy
+Flask-SSLify
 Flask-WTF
 Jinja2
 SQLAlchemy

@@ -5,6 +5,7 @@ import os
 
 from flask import Flask, request, render_template
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.sslify import SSLify
 from flask.ext.wtf import Form
 import sendgrid
 import sys
@@ -43,6 +44,7 @@ else:
 
 import_cloudfoundry_config(app.config)
 db = SQLAlchemy(app)
+sslify = SSLify(app, permanent=True)
 
 
 class User(db.Model):
