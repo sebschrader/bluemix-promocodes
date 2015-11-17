@@ -19,6 +19,8 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "~3.3.5"
+    "bootstrap": "~3.3.5",
+    "html5shiv": "~3.7.3",
+    "respond": "~1.4.2"
   }
 }
