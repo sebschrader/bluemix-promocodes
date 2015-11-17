@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block body %}
+  <div class="site-wrapper">
+
+    <div class="site-wrapper-inner">
+
+      <div class="cover-container">
+
+        <div class="masthead clearfix">
+          <div class="inner">
+            <p class="navbar-brand">
+              <a href="https://bluemix.net/" rel="nofollow noreferrer">
+                <img src="{{ url_for('static', filename='logo.png') }}">
+              </a>
+            </p>
+            <h1 class="masthead-brand">IBM Bluemix Academic Initiative</h1>
+          </div>
+        </div>
+
+        <div class="inner cover">
+          {% for category, message in _flashes %}
+              {% if category == 'error' %}
+                  <p class="bg-danger">{{ message }}</p>
+              {% elif category == 'info' %}
+                  <p class="bg-info">{{ message }}</p>
+              {% elif category == 'warning' %}
+                  <p class="bg-warning">{{ message }}</p>
+              {% elif category == 'success' %}
+                  <p class="bg-success">{{ message }}</p>
+              {% else %}
+                  <p class="bg-info">{{ message }}</p>
+              {% endif %}
+          {% endfor %}
+          {% block content %}{% endblock %}
+        </div>
+
+        <div class="mastfoot">
+          <div class="inner">
+            <p>IBM Bluemix - The Digital Innovation Platform.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+{% endblock %}
