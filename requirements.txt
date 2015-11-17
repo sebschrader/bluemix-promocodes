@@ -1,5 +1,4 @@
 Flask
-Flask-Admin
 Flask-BasicAuth
 Flask-SQLAlchemy
 Flask-WTF
