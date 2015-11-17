@@ -84,6 +84,7 @@ def transaction():
         db.session.rollback()
         raise
 
+
 def get_user_by_id(user_id):
     return db.session.query(User).filter_by(id=user_id).first()
 
