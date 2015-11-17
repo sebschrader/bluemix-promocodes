@@ -14,6 +14,7 @@ import sendgrid
 import sys
 
 from sqlalchemy import type_coerce
+from werkzeug.contrib.fixers import ProxyFix
 from wtforms import StringField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, EqualTo
@@ -159,7 +160,7 @@ class RequestCodeForm(Form):
 
 @app.route('/', methods=('GET', 'POST'))
 def request_code():
-    form = RequestCodeForm(request.form)
+    form = RequestCodeForm()
     if form.validate_on_submit():
         with transaction():
             email = form.email.data
@@ -282,3 +283,6 @@ app.register_blueprint(admin, url_prefix='/admin')
 if __name__ == '__main__':
     port = int(os.getenv('VCAP_APP_PORT', 8000))
     app.run(port=port)
+else:
+    num_proxies = app.config['REVERSE_PROXY_COUNT']
+    app = ProxyFix(app, num_proxies)
