@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block page_style %}
+  <link href="{{ url_for('static', filename='admin.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='dependencies/bootstrap-table/dist/bootstrap-table.min.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block page_script %}
+  <script src="{{ url_for('static', filename='dependencies/bootstrap-table/dist/bootstrap-table.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Promocodes Administration</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          {% set nav = (
+              ('Requests', 'admin.list_requests'),
+              ('Codes', 'admin.list_codes'),
+            )
+          %}
+          {% for title, endpoint in nav %}
+            <li {% if request.endpoint == endpoint %}class="active"{% endif %}>
+              <a href="{{ url_for(endpoint) }}">{{ title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+  </nav>
+
+  <div class="container" role="main">
+    {% block content %}{% endblock %}
+  </div>
+{% endblock %}

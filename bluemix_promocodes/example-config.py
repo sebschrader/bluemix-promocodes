@@ -8,3 +8,5 @@ SECRET_KEY = 'correcthorsebatterystaple'
 EMAIL_ADDRESS = 'me@example.com'
 # Debug mode (never set this to True in production!)
 DEBUG = False
+# Admin password
+BASIC_AUTH_PASSWORD = 'fixme'

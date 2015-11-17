@@ -1,0 +1,11 @@
+{% extends 'admin.html' %}
+{% import 'forms.html' as forms %}
+
+{% block content %}
+      <form method="post" action="{{ url_for('.import_codes') }}" enctype="multipart/form-data">
+        {% for field in form %}
+            {{ forms.render_field(field) }}
+        {% endfor %}
+        <button class="btn btn-lg btn-primary" type="submit">Upload</button>
+      </form>
+{% endblock %}

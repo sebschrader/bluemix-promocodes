@@ -1,0 +1,39 @@
+{% extends 'admin.html' %}
+
+{% block content %}
+  <h1>Codes</h1>
+  <div id="code-table-toolbar" class="btn-toolbar" role="toolbar">
+    <a href="{{ url_for('.import_codes') }}" class="btn btn-primary">
+      Import Codes
+    </a>
+  </div>
+  <table id="code-table" class="table table-striped"
+         data-toggle="table"
+         data-cache="false"
+         data-url="{{ url_for('.list_codes') }}"
+         data-response-handler="responseHandler"
+         data-id-field="id"
+         data-search="true"
+         data-pagination="true"
+         data-toolbar="#code-table-toolbar">
+    <thead>
+      <tr>
+        <th data-field="code" data-sortable="true">Code</th>
+        <th data-field="requested" data-sortable="true" data-formatter="requestedFormatter">Requested</th>
+      </tr>
+    </thead>
+  </table>
+
+  <script type="text/javascript">
+    function responseHandler(res) {
+      return res.rows;
+    }
+    function requestedFormatter(value) {
+      if (value) {
+        return 'Yes';
+      } else {
+        return 'No';
+      }
+    }
+  </script>
+{% endblock content %}

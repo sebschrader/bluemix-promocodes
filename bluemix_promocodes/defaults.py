@@ -1,1 +1,3 @@
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+BASIC_AUTH_REALM = 'Promocode Administration'
+BASIC_AUTH_USERNAME = 'admin'

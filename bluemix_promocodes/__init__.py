@@ -1,14 +1,19 @@
 import contextlib
+import csv
 import json
 import logging
 import os
 
-from flask import Flask, request, render_template
+from flask import Blueprint, Flask, Response, jsonify, render_template, request
+from flask.ext.basicauth import BasicAuth
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.sslify import SSLify
 from flask.ext.wtf import Form
+from flask.ext.wtf.file import FileField
 import sendgrid
 import sys
+
+from sqlalchemy import type_coerce
 from wtforms import StringField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, EqualTo
@@ -101,6 +106,10 @@ def get_code_by_user_id(user_id):
     return db.session.query(Code).filter_by(user_id=user_id).first()
 
 
+def get_code_by_value(value):
+    return db.session.query(Code).filter_by(value=value).first()
+
+
 def get_unused_code():
     return db.session.query(Code).filter_by(user=None).limit(1).first()
 
@@ -131,6 +140,14 @@ def send_code_mail(email, first_name, last_name, code):
     msg.smtpapi.add_filter('gravatar', 'enable', 0)
     sg = get_sendgrid_client()
     status, message = sg.send(msg)
+
+
+def request_wants_json():
+    best = request.accept_mimetypes \
+        .best_match(['application/json', 'text/html'])
+    return best == 'application/json' and \
+        request.accept_mimetypes[best] > \
+        request.accept_mimetypes['text/html']
 
 
 class RequestCodeForm(Form):
@@ -170,6 +187,96 @@ def resend_code(email):
             return render_template('errors/generic.html', message="Internal error (No code for request available).")
         send_code_mail(user.email, user.first_name, user.last_name, user.code.value)
         return render_template('code_resent.html', email=email)
+
+
+admin = Blueprint('admin', 'admin')
+basic_auth = BasicAuth(app)
+
+
+@admin.before_request
+@basic_auth.required
+def before_request():
+    pass
+
+
+class ImportCodesForm(Form):
+    csv = FileField("CSV File", description="The CSV file must contain a "
+                                            "single column without a header")
+
+
+@admin.route('/import-codes', methods=('GET', 'POST'))
+def import_codes():
+    form = ImportCodesForm()
+    if form.validate_on_submit():
+        reader = csv.reader(form.csv.data)
+        values = []
+        for row in reader:
+            values.append(row[0])
+        with transaction():
+            for value in values:
+                if not get_code_by_value(value=value):
+                    db.session.add(Code(value=value))
+        return render_template('list_codes.html')
+    else:
+        return render_template('import_codes.html', form=form)
+
+
+def get_requests():
+    return db.session.query(User.id, User.first_name, User.last_name,
+                            User.email, User.ip, User.created_at,
+                            Code.value).select_from(User).join(Code)
+
+
+@admin.route('/')
+@admin.route('/list-requests')
+def list_requests():
+    if request_wants_json():
+        with transaction():
+            result = get_requests()
+            return jsonify(rows=[{
+                'id': user_id,
+                'first_name': first_name,
+                'last_name': last_name,
+                'email': email,
+                'ip': ip,
+                'requested_at': created_at,
+                'code': value,
+            } for user_id, first_name, last_name, email,
+                  ip, created_at, value in result])
+    else:
+        return render_template('list_requests.html')
+
+
+@admin.route('/list-codes')
+def list_codes():
+    if request_wants_json():
+        with transaction():
+            result = db.session.query(
+                Code.id, Code.value,
+                type_coerce(Code.user_id, db.Boolean)
+            ).select_from(Code).outerjoin(User)
+            return jsonify(rows=[{
+                'id': code_id,
+                'code': value,
+                'requested': requested,
+            } for code_id, value, requested in result])
+    else:
+        return render_template('list_codes.html')
+
+
+@admin.route('/export-requests')
+def export_requests():
+    requests = get_requests()
+    response = Response(mimetype='text/csv')
+    writer = csv.writer(response.stream)
+    writer.writerow(('First Name', 'Last Name', 'E-Mail', 'IP',
+                     'Requested At', 'Code'))
+    for row in requests:
+        writer.writerow(row[1:])
+    return response
+
+
+app.register_blueprint(admin, url_prefix='/admin')
 
 
 if __name__ == '__main__':

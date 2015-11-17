@@ -1,0 +1,37 @@
+{% extends 'admin.html' %}
+
+{% block content %}
+  <h1>Requests</h1>
+  <div id="request-table-toolbar" class="btn-toolbar" role="toolbar">
+    <a href="{{ url_for('.export_requests') }}" class="btn btn-primary">
+      Export CSV
+    </a>
+  </div>
+  <table id="request-table" class="table table-striped"
+         data-toggle="table"
+         data-cache="false"
+         data-url="{{ url_for('.list_requests') }}"
+         data-response-handler="responseHandler"
+         data-id-field="id"
+         data-search="true"
+         data-pagination="true"
+         data-toolbar="#request-table-toolbar">
+    <thead>
+      <tr>
+        <th data-field="first_name" data-sortable="true">First Name</th>
+        <th data-field="last_name" data-sortable="true">Last Name</th>
+        <th data-field="email" data-sortable="true">E-Mail</th>
+        <th data-field="ip" data-sortable="true">IP</th>
+        <th data-field="requested_at" data-sortable="true">Requested at</th>
+        <th data-field="code" data-sortable="true">Code</th>
+      </tr>
+    </thead>
+  </table>
+
+  <script type="text/javascript">
+    function responseHandler(res) {
+      return res.rows;
+    }
+  </script>
+
+{% endblock %}
