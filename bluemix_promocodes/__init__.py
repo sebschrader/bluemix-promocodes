@@ -64,7 +64,13 @@ class Code(db.Model):
 
 
 def get_sendgrid_client():
-    client = sendgrid.SendGridClient(app.config['SENDGRID_USERNAME'], app.config['SENDGRID_PASSWORD'],
+    if 'SENDGRID_API_KEY' in app.config:
+        username = app.config['SENDGRID_API_KEY']
+        password = None
+    else:
+        username = app.config['SENDGRID_USERNAME']
+        password = app.config['SENDGRID_PASSWORD']
+    client = sendgrid.SendGridClient(username, password,
                                      raise_errors=True)
     return client
 
