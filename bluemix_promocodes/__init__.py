@@ -40,12 +40,7 @@ handler = logging.StreamHandler(stream=sys.stderr)
 handler.setLevel(logging.WARNING)
 app.logger.addHandler(handler)
 app.config.from_object(defaults)
-try:
-    from bluemix_promocodes import config
-except ImportError:
-    config = None
-else:
-    app.config.from_object(config)
+app.config.from_envvar('CONFIG')
 
 
 import_cloudfoundry_config(app.config)
