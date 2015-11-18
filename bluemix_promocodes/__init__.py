@@ -35,7 +35,7 @@ def import_cloudfoundry_config(config):
                 config['SENDGRID_PASSWORD'] = service['credentials']['password']
 
 
-app = Flask(__name__)
+app = Flask('bluemix_promocodes')
 handler = logging.StreamHandler(stream=sys.stderr)
 handler.setLevel(logging.WARNING)
 app.logger.addHandler(handler)
