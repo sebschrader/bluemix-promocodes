@@ -281,4 +281,4 @@ if __name__ == '__main__':
     app.run(port=port)
 else:
     num_proxies = app.config['REVERSE_PROXY_COUNT']
-    app = ProxyFix(app, num_proxies)
+    app.wsgi_app = ProxyFix(app.wsgi_app, num_proxies)
