@@ -268,7 +268,8 @@ def export_requests():
     writer.writerow(('First Name', 'Last Name', 'E-Mail', 'IP',
                      'Requested At', 'Code'))
     for row in requests:
-        writer.writerow(row[1:])
+        writer.writerow(tuple(unicode(field).encode(encoding='utf-8')
+                              for field in row[1:]))
     return response
 
 
