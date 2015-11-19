@@ -1,10 +1,19 @@
 {% macro render_field(field) %}
     {% if field.type in ('HiddenField', 'CSRFTokenField') %}
-        {{ field() }}
+      {{ field() }}
     {% else %}
           <div class="form-group{% if field.errors %} has-error{% endif %}">
+            {% if field.type in ('BooleanField',) %}
+              <label>
+                {{ field() }} {{ field.label.text }}
+              </label>
+            {% else %}
               {{ field.label() }}
               {{ field(class='form-control') }}
+            {% endif %}
+              {% if field.description %}
+                <span class="help-block">{{ field.description }}</span>
+              {% endif %}
               {% for error in field.errors %}
                   <span class="help-block">{{ error }}</span>
               {% endfor %}

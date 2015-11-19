@@ -15,9 +15,10 @@ import sys
 
 from sqlalchemy import type_coerce
 from werkzeug.contrib.fixers import ProxyFix
-from wtforms import StringField
+from wtforms import BooleanField, StringField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, EqualTo
+from wtforms.widgets import HTMLString
 
 from bluemix_promocodes import defaults
 
@@ -151,6 +152,13 @@ class RequestCodeForm(Form):
     last_name = StringField("Last Name", validators=[DataRequired()])
     email = EmailField("E-Mail", validators=[DataRequired()])
     verify_email = EmailField("Verify E-Mail", validators=[DataRequired(), EqualTo('email')])
+    consent = BooleanField(
+        'I agree that IBM is processing my personal information',
+        description=HTMLString('See the <a href="http://www.ibm.com'
+                               '/privacy/us/en/">IBM Online Privacy Statement'
+                               '</a> for details.'),
+        validators=[DataRequired()]
+    )
 
 
 @app.route('/', methods=('GET', 'POST'))
