@@ -39,6 +39,9 @@ cf push --no-start
 cf bind-service <app> <sendgrid-service>
 cf bind-service <app> <sqldb-service>
 
+# Set the CONFIG environment variable
+cf set-env <app> CONFIG config.py
+
 # Start the app
 cf start <app>
 ```
@@ -49,8 +52,9 @@ Running the App locally
 # Export the CloudFoundry environment
 cf env <app>
 
-# Add the VCAP_SERVICES variable to your environment
+# Add the VCAP_SERVICES and CONFIG variables to your environment
 VCAP_SERVICES=<long-JSON-string>
+CONFIG=config.py
 
 # Start the app
 python2 
