@@ -61,3 +61,13 @@ python2 bluemix_promocodes/__init__.py
 ```
 
 When running locally you probably want to set `DEBUG=True` in `config.py`. 
+
+Admin interface
+---------------
+The admin interface can be reached on the `/admin` endpoint, i.e.
+`http://localhost/admin/` if you're running locally or
+`https://<app>.mybluemix.net/admin/` if you're running it on Bluemix.
+
+The admin interface is protected with HTTP Basic Auth, the default username is
+`admin` and can be changed with the `BASIC_AUTH_USERNAME` option and the
+password must be set with the `BASIC_AUTH_PASSWORD` option.
