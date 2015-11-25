@@ -22,10 +22,10 @@ pip install -r requirements.txt
 bower install
 
 # Edit configs
-mv bluemix-promocodes/example-config.py bluemix-promocodes/config.py
+cp bluemix-promocodes/example-config.py bluemix-promocodes/config.py
 ${EDITOR} bluemix-promocodes/config.py
 
-mv example-manifest.yml manifest.yml
+cp example-manifest.yml manifest.yml
 ${EDITOR} manifest.yml
 
 # Login into Bluemix
