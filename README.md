@@ -56,8 +56,8 @@ cf env <app>
 VCAP_SERVICES=<long-JSON-string>
 CONFIG=config.py
 
-# Start the app
-python2 
+# Run the app
+python2 bluemix_promocodes/__init__.py
 ```
 
 When running locally you probably want to set `DEBUG=True` in `config.py`. 
