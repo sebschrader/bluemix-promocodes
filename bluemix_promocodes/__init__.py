@@ -2,6 +2,7 @@ import contextlib
 import csv
 import json
 import logging
+from operator import itemgetter
 import os
 
 from flask import Blueprint, Flask, Response, jsonify, render_template, request
@@ -15,7 +16,7 @@ import sys
 
 from sqlalchemy import type_coerce
 from werkzeug.contrib.fixers import ProxyFix
-from wtforms import BooleanField, StringField
+from wtforms import BooleanField, StringField, ValidationError
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import HTMLString
@@ -207,19 +208,28 @@ def before_request():
     pass
 
 
+class CSVFileField(FileField):
+    def process_formdata(self, valuelist):
+        super(CSVFileField, self).process_formdata(valuelist)
+        reader = csv.reader(self.data)
+        self.data = list(reader)
+
+
 class ImportCodesForm(Form):
-    csv = FileField("CSV File", description="The CSV file must contain a "
-                                            "single column without a header")
+    csv = CSVFileField("CSV File", description="The CSV file must contain a "
+                                               "single column without a header",
+                       validators=[DataRequired()])
+
+    def validate_csv(self, field):
+        if not all(len(row) == 1 for row in field.data):
+            raise ValidationError("Your CSV file has multiple columns")
 
 
 @admin.route('/import-codes', methods=('GET', 'POST'))
 def import_codes():
     form = ImportCodesForm()
     if form.validate_on_submit():
-        reader = csv.reader(form.csv.data)
-        values = []
-        for row in reader:
-            values.append(row[0])
+        values = map(itemgetter(0), form.csv.data)
         with transaction():
             for value in values:
                 if not get_code_by_value(value=value):
