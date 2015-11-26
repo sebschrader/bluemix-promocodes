@@ -2,7 +2,7 @@
 {% import 'forms.html' as forms %}
 
 {% block content %}
-    <p class="lead">Request a Promo Code for 6-months of free Bluemix usage</p>
+    <p class="lead">Request a Promo Code for an extended Bluemix trial</p>
     <form method="post" action="{{ url_for('request_code') }}">
         {% for field in form %}
             {{ forms.render_field(field) }}
