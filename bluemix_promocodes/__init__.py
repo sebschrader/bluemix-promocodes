@@ -65,6 +65,10 @@ class Code(db.Model):
     user = db.relationship(User, backref=db.backref('code', uselist=False))
 
 
+with app.app_context():
+    db.metadata.create_all(bind=db.engine)
+
+
 def get_sendgrid_client():
     if 'SENDGRID_API_KEY' in app.config:
         username = app.config['SENDGRID_API_KEY']
