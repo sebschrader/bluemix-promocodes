@@ -191,7 +191,7 @@ def resend_code(email):
     with transaction():
         user = get_user_by_email(email)
         if not user:
-            return render_template("errors/users_not_exists.html", email=email)
+            return render_template("errors/user_not_exists.html", email=email)
         if not user.code:
             return render_template('errors/generic.html', message="Internal error (No code for request available).")
         send_code_mail(user.email, user.first_name, user.last_name, user.code.value)
