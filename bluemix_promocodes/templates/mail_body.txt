@@ -1,6 +1,6 @@
 Hello {{ first_name }},
 
-if haven't already registered for a Bluemix trial, register on
+if you haven't already registered for a Bluemix trial, register on
 http://ibm.biz/joinbluemix
 
 Your promo code is {{ code }}
