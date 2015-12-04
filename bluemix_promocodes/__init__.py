@@ -24,13 +24,16 @@ from wtforms.widgets import HTMLString
 from bluemix_promocodes import defaults
 
 
+SQLDB_URI_FORMAT = "db2+ibm_db://{username}:{password}@{host}:{port}/{db}"
+
+
 def import_cloudfoundry_config(config):
     if 'VCAP_SERVICES' in os.environ:
         services = json.loads(os.getenv('VCAP_SERVICES'))
         for service in services['sqldb']:
             if service['name'] == config['SQLDB_SERVICE']:
-                uri = "db2+ibm_db://{username}:{password}@{host}:{port}/{db}"
-                config['SQLALCHEMY_DATABASE_URI'] = uri.format(**service['credentials'])
+                uri = SQLDB_URI_FORMAT.format(**service['credentials'])
+                config['SQLALCHEMY_DATABASE_URI'] = uri
         for service in services['sendgrid']:
             if service['name'] == config['SENDGRID_SERVICE']:
                 config['SENDGRID_USERNAME'] = service['credentials']['username']
@@ -57,12 +60,14 @@ class User(db.Model):
     last_name = db.Column(db.String(255), nullable=False)
     ip = db.Column(db.String(39), nullable=False)
     created_at = db.Column(db.DateTime(), nullable=False, default=db.func.now())
+    bounce_count = db.Column(db.Integer(), nullable=False, default=0)
 
 
 class Code(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=False)
     value = db.Column(db.String(64), unique=True, nullable=False)
-    user_id = db.Column(db.Integer(), db.ForeignKey(User.id), unique=True, nullable=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey(User.id), unique=True,
+                        nullable=True)
     user = db.relationship(User, backref=db.backref('code', uselist=False))
 
 
@@ -156,7 +161,8 @@ class RequestCodeForm(Form):
     first_name = StringField("First Name", validators=[DataRequired()])
     last_name = StringField("Last Name", validators=[DataRequired()])
     email = EmailField("E-Mail", validators=[DataRequired()])
-    verify_email = EmailField("Verify E-Mail", validators=[DataRequired(), EqualTo('email')])
+    verify_email = EmailField("Verify E-Mail",
+                              validators=[DataRequired(), EqualTo('email')])
     consent = BooleanField(
         'I agree that IBM is processing my personal information',
         description=HTMLString('See the <a href="http://www.ibm.com'
@@ -176,10 +182,12 @@ def request_code():
                 return render_template('errors/user_exists.html', email=email)
             code = get_unused_code()
             if not code:
-                return render_template('errors/generic.html', message="No more codes left.")
+                return render_template('errors/generic.html',
+                                       message="No more codes left.")
             first_name = form.first_name.data
             last_name = form.last_name.data
-            user = create_user(email, first_name, last_name, request.remote_addr)
+            ip = request.remote_addr
+            user = create_user(email, first_name, last_name, ip)
             allocate_code(user, code)
             send_code_mail(email, first_name, last_name, code.value)
         return render_template('code_sent.html', code=code.value, email=email)
@@ -193,7 +201,10 @@ def resend_code(email):
         if not user:
             return render_template("errors/user_not_exists.html", email=email)
         if not user.code:
-            return render_template('errors/generic.html', message="Internal error (No code for request available).")
+            return render_template(
+                'errors/generic.html',
+                message="Internal error (No code for request available)."
+            )
         value = user.code.value
         send_code_mail(user.email, user.first_name, user.last_name, value)
         return render_template('code_resent.html', code=value, email=email)
