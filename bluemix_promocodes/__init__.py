@@ -146,7 +146,7 @@ def send_code_mail(email, first_name, last_name, code):
     msg.smtpapi.add_filter('opentrack', 'enable', 0)
     msg.smtpapi.add_filter('gravatar', 'enable', 0)
     sg = get_sendgrid_client()
-    status, message = sg.send(msg)
+    return sg.send(msg)
 
 
 def request_wants_json():
