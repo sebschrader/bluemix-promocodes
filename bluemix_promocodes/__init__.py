@@ -132,7 +132,7 @@ def create_user(email, first_name, last_name, ip):
     return user
 
 
-def send_code_mail(email, first_name, last_name, code):
+def send_code_mail(email, first_name, last_name, code, send_at=None):
     msg = sendgrid.Mail()
     msg.add_to(email)
     msg.set_from(app.config['EMAIL_ADDRESS'])
@@ -145,6 +145,8 @@ def send_code_mail(email, first_name, last_name, code):
     msg.smtpapi.add_filter('ganalytics', 'enable', 0)
     msg.smtpapi.add_filter('opentrack', 'enable', 0)
     msg.smtpapi.add_filter('gravatar', 'enable', 0)
+    if send_at:
+        msg.smtpapi.set_send_at(send_at)
     sg = get_sendgrid_client()
     return sg.send(msg)
 
