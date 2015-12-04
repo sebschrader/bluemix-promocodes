@@ -66,8 +66,10 @@ class User(db.Model):
 class Code(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=False)
     value = db.Column(db.String(64), unique=True, nullable=False)
-    user_id = db.Column(db.Integer(), db.ForeignKey(User.id), unique=True,
-                        nullable=True)
+    user_id = db.Column(db.Integer(),
+                        db.ForeignKey(User.id, onupdate='CASCADE',
+                                      ondelete='SET NULL'),
+                        unique=True, nullable=True)
     user = db.relationship(User, backref=db.backref('code', uselist=False))
 
 
