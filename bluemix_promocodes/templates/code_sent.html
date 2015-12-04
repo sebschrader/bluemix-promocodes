@@ -2,7 +2,9 @@
 
 {% block content %}
     <p class="lead">
-        A promo code and instructions have been sent to {{ email }}.
+      Your code is {{ code }}.
+    </p><p>
+      Further instructions have been sent to {{ email }}.
     </p><p>
         <a class="btn btn-default btn-lg" href="{{ url_for('request_code') }}">Back</a>
     </p>

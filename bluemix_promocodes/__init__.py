@@ -182,7 +182,7 @@ def request_code():
             user = create_user(email, first_name, last_name, request.remote_addr)
             allocate_code(user, code)
             send_code_mail(email, first_name, last_name, code.value)
-        return render_template('code_sent.html', email=email)
+        return render_template('code_sent.html', code=code.value, email=email)
     return render_template('request_code.html', form=form)
 
 
@@ -194,8 +194,9 @@ def resend_code(email):
             return render_template("errors/user_not_exists.html", email=email)
         if not user.code:
             return render_template('errors/generic.html', message="Internal error (No code for request available).")
-        send_code_mail(user.email, user.first_name, user.last_name, user.code.value)
-        return render_template('code_resent.html', email=email)
+        value = user.code.value
+        send_code_mail(user.email, user.first_name, user.last_name, value)
+        return render_template('code_resent.html', code=value, email=email)
 
 
 admin = Blueprint('admin', 'admin')
