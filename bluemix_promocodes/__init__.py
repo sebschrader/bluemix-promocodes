@@ -1,5 +1,7 @@
+from collections import Sequence
 import contextlib
 import csv
+from datetime import datetime
 import json
 import logging
 from operator import itemgetter
@@ -16,6 +18,7 @@ import sys
 
 from sqlalchemy import type_coerce
 from werkzeug.contrib.fixers import ProxyFix
+from werkzeug.exceptions import BadRequest
 from wtforms import BooleanField, StringField, ValidationError
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import DataRequired, EqualTo
@@ -212,6 +215,54 @@ def resend_code(email):
         value = user.code.value
         send_code_mail(user.email, user.first_name, user.last_name, value)
         return render_template('code_resent.html', code=value, email=email)
+
+
+class BadAPIRequest(BadRequest):
+    def __init__(self):
+        response = jsonify(code=self.code, message='Bad Request')
+        super(BadAPIRequest, self).__init__(response=response)
+
+
+def handle_sendgrid_bounce(event):
+    try:
+        email = event['email']
+        reason = event['reason']
+        timestamp = event['timestamp']
+    except KeyError:
+        raise BadAPIRequest()
+    with transaction():
+        user = get_user_by_email(email)
+        user.bounce_count += 1
+        if not reason.startswith('4'):
+            return
+        if user.bounce_count < app.config['MAXIMUM_BOUNCE_COUNT']:
+            send_at = timestamp + app.config['BOUNCE_RETRY_DELAY']
+            send_code_mail(email, user.first_name, user.last_name,
+                           user.code.value, send_at)
+
+
+def handle_sendgrid_event(event):
+    try:
+        event_type = event['event']
+    except KeyError:
+        raise BadAPIRequest()
+    if event_type == 'bounce':
+        handle_sendgrid_bounce(event)
+    else:
+        app.logger.warning("Unhandled SendGrid event %r", event)
+
+
+@app.route('/hooks/sendgrid-events', methods=('POST',))
+def receive_sendgrid_events():
+    try:
+        events = json.loads(request.data)
+    except ValueError:
+        raise BadAPIRequest()
+    if not isinstance(events, Sequence):
+        raise BadAPIRequest()
+    for event in events:
+        handle_sendgrid_event(event)
+    return jsonify(message='OK')
 
 
 admin = Blueprint('admin', 'admin')
