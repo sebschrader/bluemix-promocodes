@@ -58,7 +58,7 @@ sslify = SSLify(app, permanent=True)
 
 class User(db.Model):
     id = db.Column(db.Integer(), primary_key=True, nullable=False)
-    email = db.Column(db.String(255), unique=True, nullable=False)
+    email = db.Column(db.String(255), unique=True, index=True, nullable=False)
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255), nullable=False)
     ip = db.Column(db.String(39), nullable=False)
