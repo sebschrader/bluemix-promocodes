@@ -7,8 +7,12 @@ Codes are stored in the Bluemix SQL database service (IBM DB2) and sent via emai
 Usage
 -----
 Create a SQL database service and sendgrid service in Bluemix, if you haven't already.
-The database schema is `schema.sql`.
-You can use the web console to create schema on the Bluemix SQL database.
+The app will automatically set up the tables and indexes during startup,
+if they don't exists.
+In addition a SQL script that creates the database schema can be found in
+`schema.sql`, if you want to create the database manually.
+You can use the web console that is reachable from the Bluemix interface to
+execute SQL commands.
 
 ```bash
 # (Recommended) Create a virtualenv
