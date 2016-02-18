@@ -57,8 +57,8 @@ Running the App locally
 cf env <app>
 
 # Add the VCAP_SERVICES and CONFIG variables to your environment
-VCAP_SERVICES=<long-JSON-string>
-CONFIG=config.py
+export VCAP_SERVICES=<long-JSON-string>
+export CONFIG=config.py
 
 # Run the app
 python2 bluemix_promocodes/__init__.py
