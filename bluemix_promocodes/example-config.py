@@ -10,3 +10,6 @@ EMAIL_ADDRESS = 'me@example.com'
 DEBUG = False
 # Admin password
 BASIC_AUTH_PASSWORD = 'fixme'
+# Number of reverse proxies between the end user and the app.
+# Required to correctly determine the client's IP address
+REVERSE_PROXY_COUNT = 2
