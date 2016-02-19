@@ -161,3 +161,8 @@ body {
     width: 700px;
   }
 }
+
+.g-recaptcha {
+  margin: 0 auto;
+  width: 304px;
+}

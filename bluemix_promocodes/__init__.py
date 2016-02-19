@@ -11,7 +11,7 @@ from flask import Blueprint, Flask, Response, jsonify, render_template, request
 from flask.ext.basicauth import BasicAuth
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.sslify import SSLify
-from flask.ext.wtf import Form
+from flask.ext.wtf import Form, RecaptchaField
 from flask.ext.wtf.file import FileField
 import sendgrid
 import sys
@@ -179,6 +179,7 @@ class RequestCodeForm(Form):
                                '</a> for details.'),
         validators=[DataRequired()]
     )
+    recaptcha = RecaptchaField()
 
 
 @app.route('/', methods=('GET', 'POST'))

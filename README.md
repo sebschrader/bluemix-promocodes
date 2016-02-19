@@ -14,6 +14,11 @@ In addition a SQL script that creates the database schema can be found in
 You can use the web console that is reachable from the Bluemix interface to
 execute SQL commands.
 
+The code form is protected by reCAPTCHA to prevent bots from requesting codes.
+You have to request a public/private key from
+[Google](https://www.google.com/recaptcha/admin)
+and put it in your config file.
+
 ```bash
 # (Recommended) Create a virtualenv
 virtualenv -p python2 .venv

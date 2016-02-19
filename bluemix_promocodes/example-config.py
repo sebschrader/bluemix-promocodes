@@ -13,3 +13,7 @@ BASIC_AUTH_PASSWORD = 'fixme'
 # Number of reverse proxies between the end user and the app.
 # Required to correctly determine the client's IP address
 REVERSE_PROXY_COUNT = 2
+# The code form is protected by reCAPTCHA
+# Request keys for your domain on https://www.google.com/recaptcha/admin
+RECAPTCHA_PUBLIC_KEY = ''
+RECAPTCHA_PRIVATE_KEY = ''
