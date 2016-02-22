@@ -100,7 +100,7 @@ to a location where you would like your local database to be stored, e.g.:
 SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
 ```
 
-# Run the app
+### Run the app
 ```bash
 # Run the app with the integrated development server
 ./run.sh
