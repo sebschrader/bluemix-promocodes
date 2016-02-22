@@ -22,7 +22,7 @@ and put it in your config file.
 ```bash
 # (Recommended) Create a virtualenv
 virtualenv -p python2 .venv
-.venv/bin/activate
+. .venv/bin/activate
 
 # Install Python dependencies
 pip install -r requirements.txt
