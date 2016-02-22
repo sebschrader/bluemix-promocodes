@@ -20,13 +20,6 @@ You have to request a public/private key from
 and put it in your config file.
 
 ```bash
-# (Recommended) Create a virtualenv
-virtualenv -p python2 .venv
-. .venv/bin/activate
-
-# Install Python dependencies
-pip install -r requirements.txt
-
 # Install JavaScript/CSS dependencies
 bower install
 
@@ -57,19 +50,61 @@ cf start <app>
 
 Running the App locally
 -----------------------
+To run the app locally, you need Python 2 and pip. It is highly recommend that
+you also use a virtualenv for the dependencies of the app.
+
+### Installing the dependencies
 ```bash
-# Export the CloudFoundry environment
-cf env <app>
+# (Recommended) Create a virtualenv
+virtualenv -p python2 .venv
+. .venv/bin/activate
 
-# Add the VCAP_SERVICES and CONFIG variables to your environment
-export VCAP_SERVICES=<long-JSON-string>
-export CONFIG=config.py
-
-# Run the app
-python2 bluemix_promocodes/__init__.py
+# Install Python dependencies
+pip install -r requirements.txt
 ```
 
-When running locally you probably want to set `DEBUG=True` in `config.py`. 
+### Creating a development config
+For development, you probably want to use a different configuration, e.g. to run
+the app in debug mode by setting
+
+```python
+DEBUG = True
+```
+
+```bash
+# Use a separate config file dev-config.py
+cp bluemix_promocodes/config.py bluemix_promocodes/dev-config.py
+${EDITOR} bluemix_promocodes/dev-config.py
+```
+
+### Option 1: Using the Bluemix SQL database
+You have two options to run the app locally. You can run it with the remote
+Bluemix database or a local SQLite database.
+
+To use the remote Bluemix database we need its connection information.
+```bash
+# Obtain the CloudFoundry environment variables
+cf env <app>
+
+# Add the VCAP_SERVICES environment variable to run.sh
+${EDITOR} run.sh
+```
+
+### Option 2: Using a local SQLite database
+Instead of using the remote SQL database in Bluemix, which probably contains
+the production data and has a much bigger latency, a local SQLite database may
+also be used, just point the `SQLALCHEMY_DATABASE_URI` in your `dev-config.py`
+to a location where you would like your local database to be stored, e.g.:
+
+```python
+SQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/test.db'
+```
+
+# Run the app
+```bash
+# Run the app with the integrated development server
+./run.sh
+```
 
 Admin interface
 ---------------
