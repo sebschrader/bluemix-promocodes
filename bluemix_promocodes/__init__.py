@@ -5,6 +5,7 @@ import json
 import logging
 from operator import itemgetter
 import os
+import sys
 import urlparse
 
 from flask import Blueprint, Flask, Response, jsonify, render_template, request
@@ -14,8 +15,6 @@ from flask.ext.sslify import SSLify
 from flask.ext.wtf import Form, RecaptchaField
 from flask.ext.wtf.file import FileField
 import sendgrid
-import sys
-
 from sqlalchemy import type_coerce
 from werkzeug.contrib.fixers import ProxyFix
 from werkzeug.exceptions import BadRequest
