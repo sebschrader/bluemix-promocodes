@@ -27,7 +27,7 @@ from bluemix_promocodes import defaults
 
 
 def get_postgresql_uri(services, service_name):
-    for service in services['elephantsql']:
+    for service in services.get('elephantsql', ()):
         if service['name'] == service_name:
             # Replace the URI scheme
             old = urlparse.urlparse(service['credentials']['uri'])
@@ -36,13 +36,28 @@ def get_postgresql_uri(services, service_name):
     return None
 
 
+def get_sendgrid_credentials(services, service_name):
+    for service in services.get('sendgrid', ()):
+        if service['name'] == service_name:
+            return (service['credentials']['username'],
+                    service['credentials']['password'])
+    return None
+
+
 def import_cloudfoundry_config(config):
     if 'VCAP_SERVICES' in os.environ:
         services = json.loads(os.getenv('VCAP_SERVICES'))
-        for service in services['sendgrid']:
-            if service['name'] == config['SENDGRID_SERVICE']:
-                config['SENDGRID_USERNAME'] = service['credentials']['username']
-                config['SENDGRID_PASSWORD'] = service['credentials']['password']
+        if 'SENDGRID_SERVICE' in config:
+            service_name = config['SENDGRID_SERVICE']
+            credentials = get_sendgrid_credentials(services, service_name)
+            if credentials is None:
+                raise RuntimeError('No SENDGRID_SERVICE named {} found in the '
+                                   'VCAP_SERVICES environment variable. Did '
+                                   'you add the service to the application?'
+                                   .format(service_name))
+            username, password = credentials
+            config['SENDGRID_USERNAME'] = username
+            config['SENDGRID_PASSWORD'] = password
         if 'ELEPHANTSQL_SERVICE' in config:
             service_name = config['ELEPHANTSQL_SERVICE']
             uri = get_postgresql_uri(services, service_name)
