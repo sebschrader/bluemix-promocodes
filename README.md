@@ -4,15 +4,16 @@ Request promo codes with the browser.
 
 Codes are stored in the Bluemix SQL database service (IBM DB2) and sent via email through SendGrid.
 
+Notes
+-----
+The IBM SQL database, a free DB2 variant, has been deprecated as of 2016-02-23,
+therefore this application has switched to ElephantSQL, a PostgreSQL variant.
+
 Usage
 -----
-Create a SQL database service and sendgrid service in Bluemix, if you haven't already.
+Create a ElephantSQL database service and SendGrid service in Bluemix, if you haven't already.
 The app will automatically set up the tables and indexes during startup,
 if they don't exists.
-In addition a SQL script that creates the database schema can be found in
-`schema.sql`, if you want to create the database manually.
-You can use the web console that is reachable from the Bluemix interface to
-execute SQL commands.
 
 The code form is protected by reCAPTCHA to prevent bots from requesting codes.
 You have to request a public/private key from

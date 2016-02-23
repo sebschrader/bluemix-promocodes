@@ -6,6 +6,7 @@ import json
 import logging
 from operator import itemgetter
 import os
+import urlparse
 
 from flask import Blueprint, Flask, Response, jsonify, render_template, request
 from flask.ext.basicauth import BasicAuth
@@ -27,20 +28,32 @@ from wtforms.widgets import HTMLString
 from bluemix_promocodes import defaults
 
 
-SQLDB_URI_FORMAT = "db2+ibm_db://{username}:{password}@{host}:{port}/{db}"
+def get_postgresql_uri(services, service_name):
+    for service in services['elephantsql']:
+        if service['name'] == service_name:
+            # Replace the URI scheme
+            old = urlparse.urlparse(service['credentials']['uri'])
+            new = urlparse.ParseResult('postgresql+psycopg2', *old[1:])
+            return urlparse.urlunparse(new)
+    return None
 
 
 def import_cloudfoundry_config(config):
     if 'VCAP_SERVICES' in os.environ:
         services = json.loads(os.getenv('VCAP_SERVICES'))
-        for service in services['sqldb']:
-            if service['name'] == config['SQLDB_SERVICE']:
-                uri = SQLDB_URI_FORMAT.format(**service['credentials'])
-                config['SQLALCHEMY_DATABASE_URI'] = uri
         for service in services['sendgrid']:
             if service['name'] == config['SENDGRID_SERVICE']:
                 config['SENDGRID_USERNAME'] = service['credentials']['username']
                 config['SENDGRID_PASSWORD'] = service['credentials']['password']
+        if 'ELEPHANTSQL_SERVICE' in config:
+            service_name = config['ELEPHANTSQL_SERVICE']
+            uri = get_postgresql_uri(services, service_name)
+            if uri is None:
+                raise RuntimeError('No ElephantSQL service named {} found in '
+                                   'the VCAP_SERVICES environment variable. '
+                                   'Did you add the service to the application?'
+                                   .format(service_name))
+            config['SQLALCHEMY_DATABASE_URI'] = uri
 
 
 app = Flask('bluemix_promocodes')
