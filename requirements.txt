@@ -6,6 +6,8 @@ Flask-WTF
 Jinja2
 SQLAlchemy
 WTForms
+gevent
 gunicorn
+psycogreen
 psycopg2
 sendgrid

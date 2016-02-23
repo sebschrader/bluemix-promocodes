@@ -14,6 +14,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.sslify import SSLify
 from flask.ext.wtf import Form, RecaptchaField
 from flask.ext.wtf.file import FileField
+from gevent.monkey import patch_all
+from psycogreen.gevent import patch_psycopg
 import sendgrid
 from sqlalchemy import type_coerce
 from werkzeug.contrib.fixers import ProxyFix
@@ -24,6 +26,10 @@ from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import HTMLString
 
 from bluemix_promocodes import defaults
+
+
+patch_all()
+patch_psycopg()
 
 
 def get_postgresql_uri(services, service_name):
