@@ -1,7 +1,6 @@
 from collections import Sequence
 import contextlib
 import csv
-from datetime import datetime
 import json
 import logging
 from operator import itemgetter
