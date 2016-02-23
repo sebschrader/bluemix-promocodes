@@ -87,7 +87,7 @@ class Code(db.Model):
     user_id = db.Column(db.Integer(),
                         db.ForeignKey(User.id, onupdate='RESTRICT',
                                       ondelete='SET NULL'),
-                        unique=True, nullable=True)
+                        unique=True, index=True, nullable=True)
     user = db.relationship(User, backref=db.backref('code', uselist=False))
 
 
