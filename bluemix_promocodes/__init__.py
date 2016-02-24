@@ -1,3 +1,4 @@
+import urllib
 from collections import Sequence
 import contextlib
 import csv
@@ -37,7 +38,16 @@ def get_postgresql_uri(services, service_name):
         if service['name'] == service_name:
             # Replace the URI scheme
             old = urlparse.urlsplit(service['credentials']['uri'])
-            new = urlparse.SplitResult('postgresql+psycopg2', *old[1:])
+            scheme = 'postgresql+psycopg2'
+            netloc = old.netloc
+            path = old.path
+            query = urllib.urlencode({
+                'application_name': 'bluemix_promocodes',
+                'sslmode': 'require',
+                'client_encoding': 'utf-8',
+                'connect_timeout': 10,
+             })
+            new = urlparse.SplitResult(scheme, netloc, path, query, '')
             return urlparse.urlunsplit(new)
     return None
 
