@@ -36,9 +36,9 @@ def get_postgresql_uri(services, service_name):
     for service in services.get('elephantsql', ()):
         if service['name'] == service_name:
             # Replace the URI scheme
-            old = urlparse.urlparse(service['credentials']['uri'])
-            new = urlparse.ParseResult('postgresql+psycopg2', *old[1:])
-            return urlparse.urlunparse(new)
+            old = urlparse.urlsplit(service['credentials']['uri'])
+            new = urlparse.SplitResult('postgresql+psycopg2', *old[1:])
+            return urlparse.urlunsplit(new)
     return None
 
 
