@@ -10,9 +10,5 @@ https://console.ng.bluemix.net and go to your account settings in the
 upper right corner. You will find it there once you have registered and
 logged in.
 
-If you are a member of a faculty you will get an even bigger account for
-Bluemix free for research and education purposes. Request your faculty
-access under http://ibm.biz/aiforcloud
-
 Startups will get up to 120 000 US-$ credit points for Bluemix and
 Softlayer. Find out more at http://ibm.biz/cloudgep
