@@ -11,7 +11,7 @@
          data-toggle="table"
          data-cache="false"
          data-url="{{ url_for('.list_codes') }}"
-         data-response-handler="responseHandler"
+         data-response-handler="handle_response"
          data-id-field="id"
          data-search="true"
          data-pagination="true"
@@ -19,16 +19,16 @@
     <thead>
       <tr>
         <th data-field="code" data-sortable="true">Code</th>
-        <th data-field="requested" data-sortable="true" data-formatter="requestedFormatter">Requested</th>
+        <th data-field="requested" data-sortable="true" data-formatter="format_boolean">Requested</th>
       </tr>
     </thead>
   </table>
 
   <script type="text/javascript">
-    function responseHandler(res) {
+    function handle_response(res) {
       return res.rows;
     }
-    function requestedFormatter(value) {
+    function format_boolean(value) {
       if (value) {
         return 'Yes';
       } else {

@@ -11,7 +11,7 @@
          data-toggle="table"
          data-cache="false"
          data-url="{{ url_for('.list_requests') }}"
-         data-response-handler="responseHandler"
+         data-response-handler="handle_response"
          data-id-field="id"
          data-search="true"
          data-pagination="true"
@@ -29,7 +29,7 @@
   </table>
 
   <script type="text/javascript">
-    function responseHandler(res) {
+    function handle_response(res) {
       return res.rows;
     }
   </script>
