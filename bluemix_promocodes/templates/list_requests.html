@@ -22,7 +22,7 @@
         <th data-field="last_name" data-sortable="true">Last Name</th>
         <th data-field="email" data-sortable="true">E-Mail</th>
         <th data-field="ip" data-sortable="true">IP</th>
-        <th data-field="requested_at" data-sortable="true">Requested at</th>
+        <th data-field="requested_at" data-sortable="true" data-formatter="format_datetime">Requested at</th>
         <th data-field="code" data-sortable="true">Code</th>
       </tr>
     </thead>
@@ -32,6 +32,14 @@
     function handle_response(res) {
       return res.rows;
     }
+    function format_datetime(value) {
+      return moment(value).format('LLL');
+    }
   </script>
+
+  {% block page_script %}
+    super()
+    <script src="{{ url_for('static', filename='dependencies/moment/min/moment.min.js') }}"></script>
+  {% endblock %}
 
 {% endblock %}

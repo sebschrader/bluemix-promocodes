@@ -23,6 +23,7 @@
     "bootstrap-table": "~1.9.1",
     "html5shiv": "~3.7.3",
     "respond": "~1.4.2",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "moment": "~2.13.0"
   }
 }

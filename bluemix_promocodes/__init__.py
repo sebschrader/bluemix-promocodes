@@ -369,7 +369,7 @@ def list_requests():
                 'last_name': last_name,
                 'email': email,
                 'ip': ip,
-                'requested_at': created_at,
+                'requested_at': created_at.isoformat(),
                 'code': value,
             } for user_id, first_name, last_name, email,
                   ip, created_at, value in result])
