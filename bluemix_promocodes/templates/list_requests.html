@@ -27,7 +27,9 @@
       </tr>
     </thead>
   </table>
+{% endblock %}
 
+{% block page_script %}
   <script type="text/javascript">
     function handle_response(res) {
       return res.rows;
@@ -36,10 +38,6 @@
       return moment(value).format('LLL');
     }
   </script>
-
-  {% block page_script %}
-    super()
-    <script src="{{ url_for('static', filename='dependencies/moment/min/moment.min.js') }}"></script>
-  {% endblock %}
-
+  {{  super() }}
+  <script src="{{ url_for('static', filename='dependencies/moment/min/moment.min.js') }}"></script>
 {% endblock %}

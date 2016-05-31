@@ -23,7 +23,10 @@
       </tr>
     </thead>
   </table>
+{% endblock content %}
 
+{% block page_script %}
+  {{ super() }}
   <script type="text/javascript">
     function handle_response(res) {
       return res.rows;
@@ -36,4 +39,4 @@
       }
     }
   </script>
-{% endblock content %}
+{% endblock %}
